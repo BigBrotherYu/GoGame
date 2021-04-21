@@ -1,0 +1,3 @@
+This go game simulator is amid to be a good playground for a go AI to paly with and could also be used between players
+the gameboard is the UI. It only render the resulting game play to image for display.
+the game engine is the one that administer the game
