@@ -130,7 +130,6 @@ class GoGame:
         mask[mask != 0] = 1
         self.game_board = self.game_board * mask
 
-
     def update_qi_map(self):
         print('new boardered', self.boardered)
         for i in range(self.game_size):
@@ -146,9 +145,13 @@ class GoGame:
         for i in range(self.game_size):
             for j in range(self.game_size):
                 if self.game_board[i][j] == 0:
-                    self.boardered[i + 1][j + 1] = 0
+                    self.group_map[i][j] = 0
                 elif self.game_board[i][j] == self.boardered[i][j+1]:
                     self.group_map[i][j] = self.group_map[i - 1][j]
+                    if self.game_board[i][j] == self.boardered[i+1][j] and self.group_map[i][j] != self.group_map[i+1][j]:
+                        self.group_map[self.group_map == self.group_map[i+1][j]] = self.group_map[i][j]
+                    else:
+                        pass
                 elif self.game_board[i][j] == self.boardered[i+1][j]:
                     self.group_map[i][j] = self.group_map[i][j - 1]
                 else:
