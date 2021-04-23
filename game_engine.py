@@ -13,7 +13,7 @@ class GoGame:
 
         # game_board represent the current state of the game, 1 represent black stone, 2 represent white stone
         self.game_board = np.zeros(shape=(game_size, game_size), dtype=np.int8)
-        # boardered is game_board with boarders, boarders are '3's
+        # boardered is game_board with boarders, boarders are '3's. It has a new coordinate system which (x, y) = (x + 1, y + 1)
         self.boardered = None
         # map storing information of whether a stone have qi or not
         self.qi_map = np.zeros(shape=(game_size, game_size), dtype=np.int8)
@@ -48,6 +48,7 @@ class GoGame:
         assert 0 <= location[1] < self.game_size
         assert self.game_board[location[0]][location[1]] == 0
         copy = self.game_board.copy()
+        qi_map_copy = self.qi_map.copy()
         self.game_board[location[0]][location[1]] = self.player
 
         if self.rule == 'wuzi':
@@ -57,39 +58,36 @@ class GoGame:
             self.add_boarder()
             last_x = location[0]
             last_y = location[1]
-
             self.group_all_stones()
-            print('group map \n', self.group_map)
-            print('group index', self.group_indexes)
+
             # 最后一子的所在组
             last_group = self.group_map[last_x][last_y]
 
             # 寻找那块棋死掉了
             # self.update_qi_map()
             # 更新qi_map
-            print('game_board', self.game_board)
+            # print('game_board', self.game_board)
+            # print('group map \n', self.group_map)
+            # print('group index', self.group_indexes)
 
             self.qi_map[last_x][last_y] = self.qi(last_x, last_y)
             if last_x > 0 and self.game_board[last_x - 1][last_y] != 0:
                 self.qi_map[last_x - 1][last_y] = self.qi(last_x - 1, last_y)
-                print('zuo', (last_x - 1, last_y))
 
             if last_y > 0 and self.game_board[last_x][last_y - 1] != 0:
                 self.qi_map[last_x][last_y - 1] = self.qi(last_x, last_y - 1)
-                print('you', (last_x, last_y - 1))
 
             if last_x < self.game_size - 1 and self.game_board[last_x + 1][last_y] != 0:
                 self.qi_map[last_x + 1][last_y] = self.qi(last_x + 1, last_y)
-                print('shang', (last_x + 1, last_y))
 
             if last_y < self.game_size - 1 and self.game_board[last_x][last_y + 1] != 0:
                 self.qi_map[last_x][last_y + 1] = self.qi(last_x, last_y + 1)
-                print('xia', (last_x, last_y + 1))
 
-            print('qi map \n', self.qi_map)
+            # print('qi map \n', self.qi_map)
             result = self.qi_map * self.group_map
-            print('result map \n', result)
+            # print('result map \n', result)
             print(self.group_indexes)
+
             for i in range(len(self.group_indexes)):
                 if self.group_indexes[i] not in result and self.group_indexes[i] != last_group:
                     # 提子
@@ -97,9 +95,7 @@ class GoGame:
                     self.del_group(self.group_indexes[i])
                     self.group_indexes[i] = 0
                     self.add_boarder()
-                    self.update_qi_map() # 更新全盘气的情况
-
-
+                    self.update_qi_map()  # 更新全盘气的情况
 
             # 查看是否入气
             result = self.qi_map * self.group_map
@@ -111,10 +107,12 @@ class GoGame:
                 step_result = False
 
             # 查看是否打劫
-            if len(self.game_history) > 2 and np.array_equal(self.game_board, self.game_history[len(self.game_history)-2]):
+            if len(self.game_history) > 2 and np.array_equal(self.game_board,
+                                                             self.game_history[len(self.game_history) - 2]):
                 self.game_board = copy
+                self.qi_map = qi_map_copy
                 print('dajie')
-                return self.game_board, 'dajie'  # 不入气返回原状
+                return self.game_board, 'dajie'  # 打劫返回原状
             else:
                 step_result = False
 
@@ -131,16 +129,15 @@ class GoGame:
         self.game_board = self.game_board * mask
 
     def update_qi_map(self):
-        print('new boardered', self.boardered)
         for i in range(self.game_size):
             for j in range(self.game_size):
                 if self.game_board[i][j]:
                     self.qi_map[i][j] = self.qi(i, j)
                 else:
                     self.qi_map[i][j] = 0
-        print('new_qi_map\n', self.qi_map)
 
     def group_all_stones(self):
+        # assign each of the stone to a group
         self.group_indexes = []
         for i in range(self.game_size):
             for j in range(self.game_size):
@@ -148,8 +145,8 @@ class GoGame:
                     self.group_map[i][j] = 0
                 elif self.game_board[i][j] == self.boardered[i][j+1]:
                     self.group_map[i][j] = self.group_map[i - 1][j]
-                    if self.game_board[i][j] == self.boardered[i+1][j] and self.group_map[i][j] != self.group_map[i+1][j]:
-                        self.group_map[self.group_map == self.group_map[i+1][j]] = self.group_map[i][j]
+                    if self.game_board[i][j] == self.boardered[i+1][j] and self.group_map[i][j] != self.group_map[i][j - 1]:
+                        self.group_map[self.group_map == self.group_map[i][j - 1]] = self.group_map[i][j]
                     else:
                         pass
                 elif self.game_board[i][j] == self.boardered[i+1][j]:
