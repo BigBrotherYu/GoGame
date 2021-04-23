@@ -9,6 +9,7 @@ NAME = "Go_Simulator"
 background_image_filename = 'bg.png'
 INIT_SCREENSIZE = (640, 480)
 GAME_SIZE = 19
+gametype = 'weiqi'
 FILL_COLOR = (222, 156, 69)
 global grid_size
 global x_margin
@@ -77,7 +78,7 @@ if __name__ == '__main__':
     pygame.display.set_caption(NAME + str(screen_size))
     screen.fill(FILL_COLOR)
     redo_grill(screen_width, screen_height, GAME_SIZE)
-    game1 = GoGame()
+    game1 = GoGame(rule=gametype)
 
     while True:
 
