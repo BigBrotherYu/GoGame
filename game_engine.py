@@ -277,4 +277,11 @@ class GoGame:
         self.switch_side()
 
     def Zhong_guo(self):
-        pass
+        black = 0
+        white = 0
+        for row in self.game_board:
+            for point in row:
+                if point == 1:
+                    black += 1
+                elif point == 2:
+                    white += 1
