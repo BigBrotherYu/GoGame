@@ -3,10 +3,10 @@ import numpy as np
 
 class GoGame:
 
-    def __init__(self, game_size=19, handicap=None, rule='zhongguo'):
+    def __init__(self, game_size=19, handicap=None, rule='weiqi'):
 
         # assert game_size in [9, 13, 19]
-        assert rule in ['zhongguo', 'yingshi', 'hanguo', 'ribeng', 'wuzi']
+        assert rule in ['weiqi', 'wuzi']
 
         self.end_game = False
         self.game_size = game_size
@@ -63,13 +63,12 @@ class GoGame:
             # 最后一子的所在组
             last_group = self.group_map[last_x][last_y]
 
-            # 寻找那块棋死掉了
             # self.update_qi_map()
-            # 更新qi_map
             # print('game_board', self.game_board)
             # print('group map \n', self.group_map)
             # print('group index', self.group_indexes)
 
+            # 更新qi_map
             self.qi_map[last_x][last_y] = self.qi(last_x, last_y)
             if last_x > 0 and self.game_board[last_x - 1][last_y] != 0:
                 self.qi_map[last_x - 1][last_y] = self.qi(last_x - 1, last_y)
@@ -83,15 +82,16 @@ class GoGame:
             if last_y < self.game_size - 1 and self.game_board[last_x][last_y + 1] != 0:
                 self.qi_map[last_x][last_y + 1] = self.qi(last_x, last_y + 1)
 
+            # 判断死活
             # print('qi map \n', self.qi_map)
             result = self.qi_map * self.group_map
             # print('result map \n', result)
-            print(self.group_indexes)
+            # print(self.group_indexes)
 
             for i in range(len(self.group_indexes)):
                 if self.group_indexes[i] not in result and self.group_indexes[i] != last_group:
                     # 提子
-                    print('delete', self.group_indexes[i])
+                    # print('delete', self.group_indexes[i])
                     self.del_group(self.group_indexes[i])
                     self.group_indexes[i] = 0
                     self.add_boarder()
@@ -101,7 +101,7 @@ class GoGame:
             result = self.qi_map * self.group_map
             if last_group not in result:
                 self.game_board[last_x][last_y] = 0
-                print('buruqi')
+                # print('buruqi')
                 return self.game_board, 'Buruqi'  # 不入气返回原状
             else:
                 step_result = False
@@ -111,7 +111,7 @@ class GoGame:
                                                              self.game_history[len(self.game_history) - 2]):
                 self.game_board = copy
                 self.qi_map = qi_map_copy
-                print('dajie')
+                # print('dajie')
                 return self.game_board, 'dajie'  # 打劫返回原状
             else:
                 step_result = False

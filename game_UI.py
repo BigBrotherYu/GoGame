@@ -108,7 +108,10 @@ if __name__ == '__main__':
 
             stone_loc = (int(x), int(y))
             print(stone_loc)
-            game1.place_stone(stone_loc)
+            _, message = game1.place_stone(stone_loc)
+            # 如果报错，打印错误
+            if message:
+                print(message)
 
         screen_width, screen_height = screen_size
         # 这里需要重新填充满窗口
