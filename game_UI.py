@@ -95,7 +95,7 @@ if __name__ == '__main__':
             pos_y = pos_y - y_margin
             if pos_x % grid_size < (grid_size * 0.25):
                 x = pos_x // grid_size
-            elif pos_x % grid_size > (grid_size * 0.75):
+            elif pos_x % grid_size > (grid_size ** 0.75):
                 x = pos_x // grid_size + 1
             else:
                 continue
