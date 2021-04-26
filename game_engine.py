@@ -285,3 +285,7 @@ class GoGame:
                     black += 1
                 elif point == 2:
                     white += 1
+
+    def save_game(self, save_path):
+        path = save_path
+        np.save(path, self.game_history)
